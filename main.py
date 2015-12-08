@@ -1,11 +1,10 @@
 import time
 import serial
 from PyQt4 import QtGui
+from PyQt4.QtCore import QThread, SIGNAL
 import sys
 import design
 import os
-
-
 
 
 class ExampleApp(QtGui.QMainWindow, design.Ui_MainWindow):
@@ -29,42 +28,39 @@ class ExampleApp(QtGui.QMainWindow, design.Ui_MainWindow):
         self.btnListen.clicked.connect(self.setupSerial)
         self.btnShutdown.clicked.connect(self.teardownSerial)
 
-
     def setupSerial(self):
         # https://pyserial.readthedocs.org/en/latest/shortintro.html
         self.ser = serial.Serial()
         self.ser.baudrate = int(self.baudRate.text())
         self.ser.port = str(self.portName.text())
         self.ser.open()
-        self.listen = True
-        
-        while self.listen:
-            self.updateValues()
-            self.displayValues()
-            #time.sleep(1)
 
-        self.ser.close()
+        self.get_thread = getSerialMessages(self.ser, self.Values_To_Montior)
+        self.connect(self.get_thread, SIGNAL('updateValue(QString, QString)'), self.updateValue)
 
+        self.get_thread.start()
+        print("thread started")
+        #self.btnShutdown.clicked.connect(self.get_thread.terminate)
 
     def teardownSerial(self):
-        self.listen = False
+        self.get_thread.terminate()
+        self.ser.close()
+        print("thread terminated")
+
+    def updateValue(self, ID, value):
+        print("Updating value")
+        print("ID " + str(ID) + " Value " + str(value))
+        if (self.Values_To_Montior.get(str(ID), None) is not None): 
+            self.Values_To_Montior[str(ID)] = value 
+            self.displayValues()
 
     def displayValues(self):
+        print("displaying!!!")
         self.fieldDisplay.clear()
         for ID, value  in self.Values_To_Montior.iteritems():
             formatted_string = str(ID) + " : " + str(value)
+            print("adding item " + formatted_string)
             self.fieldDisplay.addItem(formatted_string)
-
-    def updateValues(self):
-        line = self.ser.readline() # read line
-        print("line is " + line)
-        if len(line) > 0:
-            try:
-                (ID, value) = line.split() # get id and value
-                if (self.Values_To_Montior.get(ID, None) is not None): 
-                    self.Values_To_Montior[ID] = value # update dict if necessary
-            except:
-                pass
 
     def setupFileHandler(fileName):
         #http://www.tutorialspoint.com/python/python_files_io.htm
@@ -84,11 +80,29 @@ class ExampleApp(QtGui.QMainWindow, design.Ui_MainWindow):
             
         message += "\n"
         fileHandler.write(message)
-        
 
+class getSerialMessages(QThread):    
+    def __init__(self, ser, Values_To_Montior):
+        QThread.__init__(self)
+        self.Values_To_Montior = Values_To_Montior
+        self.ser = ser
 
+    def __del__(self):
+        self.wait()            
         
-    
+        
+    def run(self):
+        while True:
+            line = self.ser.readline() # read line
+            print("from thread...")
+            print("line is " + line)
+            if len(line) > 0:
+                try:
+                    (ID, value) = line.split() # get id and value
+                    self.emit(SIGNAL('updateValue(QString,QString)'), ID, value)
+                except:
+                    pass
+
     
 
 
@@ -97,8 +111,6 @@ def main():
     form = ExampleApp()
     form.show()
     app.exec_()
-
-    
 
 if __name__ == '__main__':
     main()
@@ -109,7 +121,6 @@ if __name__ == '__main__':
 # void setup(){
 #   Serial.begin(9600);
 # }
-
 # void loop(){
 #   Serial.println("FCTEMP2 20");   
 #   Serial.flush();
