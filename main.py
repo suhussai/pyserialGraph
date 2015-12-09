@@ -1,32 +1,54 @@
 import time
 import serial
-from PyQt4 import QtGui
+from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import QThread, SIGNAL
+import PyQt4.Qwt5 as Qwt
 import sys
 import design
 import os
-
+import numpy
 
 class ExampleApp(QtGui.QMainWindow, design.Ui_MainWindow):
     def __init__(self, parent=None):
         super(ExampleApp, self).__init__(parent)
         self.setupUi(self)
         self.Values_To_Montior = {
-            "FCTEMP1" : -1,
-            "FCTEMP2" : -1,
-            "AMTEMP1" : -1,
-            "AMTEMP2" : -1,
-            "ERROR" : -1,
-            "FCVOLT" : -1,
-            "FCCURR" : -1,
-            "CAPCURR" : -1,
-            "TANKPRES" : -1,
-            "FCPRES" : -1
+            "FCTEMP1" : 0,
+            "FCTEMP2" : 0,
+            "AMTEMP1" : 0,
+            "AMTEMP2" : 0,
+            "ERROR" : 0,
+            "FCVOLT" : 0,
+            "FCCURR" : 0,
+            "CAPCURR" : 0,
+            "TANKPRES" : 0,
+            "FCPRES" : 0
         }
         self.ser = None
         self.listen = False
         self.btnListen.clicked.connect(self.setupSerial)
         self.btnShutdown.clicked.connect(self.teardownSerial)
+        self.c = Qwt.QwtPlotCurve()
+        self.c.attach(self.qwtPlot)
+        self.qwtPlot.timer = QtCore.QTimer()
+        self.qwtPlot.timer.start(1000.0)
+        self.centralwidget.connect(self.qwtPlot.timer, QtCore.SIGNAL('timeout()'), self.plotSomething)
+
+        self.x=[0]
+        self.y=[0]
+
+#        self.x=[1,2,3,4,5,6,7,8,9,10]
+#        self.y=[1,2,3,4,5,6,7,8,9,10]
+
+        
+    def plotSomething(self):
+        print("called")
+        self.c.setData(self.x, self.y)
+        self.x.append(self.x[-1] + 1)
+        if len(self.x) is not len(self.y):
+            self.y.append(int(self.Values_To_Montior["FCTEMP2"]))
+#        self.y.append(self.y[-1])
+        self.qwtPlot.replot()   
 
     def setupSerial(self):
         # https://pyserial.readthedocs.org/en/latest/shortintro.html
@@ -56,30 +78,13 @@ class ExampleApp(QtGui.QMainWindow, design.Ui_MainWindow):
 
     def displayValues(self):
         print("displaying!!!")
-        self.fieldDisplay.clear()
-        for ID, value  in self.Values_To_Montior.iteritems():
-            formatted_string = str(ID) + " : " + str(value)
-            print("adding item " + formatted_string)
-            self.fieldDisplay.addItem(formatted_string)
-
-    def setupFileHandler(fileName):
-        #http://www.tutorialspoint.com/python/python_files_io.htm
-        fileHandler = open(fileName, "w+")
-        # FCTEMP2:-1, TANKPRES:-1, FCTEMP1:-1, AMTEMP2:-1, AMTEMP1:-1, ERROR:-1, FCPRES:-1, FCVOLT:-1, FCCURR:-1, CAPCURR:-1
-        fileHandler.write("Time, FCTEMP2, TANKPRES, FCTEMP1, AMTEMP2, AMTEMP1, ERROR, FCPRES, FCVOLT, FCCURR, CAPCURR\n")
-        return fileHandler
-
-    def teardownFileHandler(fileHandler):
-        fileHandler.close()
-
-    def writeToLog(fileHandler, Values_To_Montior):
-        #http://www.tutorialspoint.com/python/python_date_time.htm
-        message = str(time.asctime(time.localtime(time.time()))) + " "
-        for ID, value in Values_To_Montior.iteritems():
-            message +=  "%d, " % (int(value))
-            
-        message += "\n"
-        fileHandler.write(message)
+        pass
+        #self.
+        # self.fieldDisplay.clear()
+        # for ID, value  in self.Values_To_Montior.iteritems():
+        #     formatted_string = str(ID) + " : " + str(value)
+        #     print("adding item " + formatted_string)
+        #     self.fieldDisplay.addItem(formatted_string)
 
 class getSerialMessages(QThread):    
     def __init__(self, ser, Values_To_Montior):

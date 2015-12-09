@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'untitled.ui'
 #
-# Created: Mon Dec  7 22:54:14 2015
+# Created: Tue Dec  8 17:29:58 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,10 +26,11 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(634, 429)
+        MainWindow.resize(702, 647)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.formLayout = QtGui.QFormLayout(self.centralwidget)
+        self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.AllNonFixedFieldsGrow)
         self.formLayout.setObjectName(_fromUtf8("formLayout"))
         self.label = QtGui.QLabel(self.centralwidget)
         self.label.setObjectName(_fromUtf8("label"))
@@ -40,21 +41,25 @@ class Ui_MainWindow(object):
         self.label_2 = QtGui.QLabel(self.centralwidget)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.formLayout.setWidget(3, QtGui.QFormLayout.FieldRole, self.label_2)
-        self.btnListen = QtGui.QPushButton(self.centralwidget)
-        self.btnListen.setObjectName(_fromUtf8("btnListen"))
-        self.formLayout.setWidget(7, QtGui.QFormLayout.FieldRole, self.btnListen)
-        self.fieldDisplay = QtGui.QListWidget(self.centralwidget)
-        self.fieldDisplay.setObjectName(_fromUtf8("fieldDisplay"))
-        self.formLayout.setWidget(9, QtGui.QFormLayout.FieldRole, self.fieldDisplay)
         self.baudRate = QtGui.QLineEdit(self.centralwidget)
         self.baudRate.setObjectName(_fromUtf8("baudRate"))
         self.formLayout.setWidget(6, QtGui.QFormLayout.FieldRole, self.baudRate)
+        self.btnListen = QtGui.QPushButton(self.centralwidget)
+        self.btnListen.setObjectName(_fromUtf8("btnListen"))
+        self.formLayout.setWidget(7, QtGui.QFormLayout.FieldRole, self.btnListen)
         self.btnShutdown = QtGui.QPushButton(self.centralwidget)
         self.btnShutdown.setObjectName(_fromUtf8("btnShutdown"))
         self.formLayout.setWidget(8, QtGui.QFormLayout.FieldRole, self.btnShutdown)
+        self.fieldDisplay = QtGui.QListWidget(self.centralwidget)
+        self.fieldDisplay.setObjectName(_fromUtf8("fieldDisplay"))
+        self.formLayout.setWidget(9, QtGui.QFormLayout.FieldRole, self.fieldDisplay)
+        self.qwtPlot = QwtPlot(self.centralwidget)
+        self.qwtPlot.setMinimumSize(QtCore.QSize(678, 211))
+        self.qwtPlot.setObjectName(_fromUtf8("qwtPlot"))
+        self.formLayout.setWidget(10, QtGui.QFormLayout.FieldRole, self.qwtPlot)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 634, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 702, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
@@ -71,3 +76,4 @@ class Ui_MainWindow(object):
         self.btnListen.setText(_translate("MainWindow", "Listen", None))
         self.btnShutdown.setText(_translate("MainWindow", "ShutDown", None))
 
+from qwt_plot import QwtPlot
