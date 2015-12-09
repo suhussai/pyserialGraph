@@ -131,3 +131,7 @@ if __name__ == '__main__':
 #   Serial.flush();
 #   delay(1000);
 # }
+
+# Ref:
+# http://www.swharden.com/blog/2013-05-08-realtime-data-plotting-in-python/
+# http://stackoverflow.com/questions/14494747/add-images-to-readme-md-on-github
