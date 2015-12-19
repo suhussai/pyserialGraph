@@ -36,18 +36,15 @@ class ExampleApp(QtGui.QMainWindow, design.Ui_MainWindow):
 
         self.x=[0]
         self.y=[0]
+        self.btnListen.setEnabled(True)
+        self.btnShutdown.setEnabled(False)
 
-#        self.x=[1,2,3,4,5,6,7,8,9,10]
-#        self.y=[1,2,3,4,5,6,7,8,9,10]
-
-        
     def plotSomething(self):
         print("called")
         self.c.setData(self.x, self.y)
         self.x.append(self.x[-1] + 1)
         if len(self.x) is not len(self.y):
             self.y.append(int(self.Values_To_Montior["FCTEMP2"]))
-#        self.y.append(self.y[-1])
         self.qwtPlot.replot()   
 
     def setupSerial(self):
@@ -62,12 +59,17 @@ class ExampleApp(QtGui.QMainWindow, design.Ui_MainWindow):
 
         self.get_thread.start()
         print("thread started")
+        self.btnListen.setEnabled(False)
+        self.btnShutdown.setEnabled(True)
+
         #self.btnShutdown.clicked.connect(self.get_thread.terminate)
 
     def teardownSerial(self):
         self.get_thread.terminate()
         self.ser.close()
         print("thread terminated")
+        self.btnListen.setEnabled(True)
+        self.btnShutdown.setEnabled(False)
 
     def updateValue(self, ID, value):
         print("Updating value")
