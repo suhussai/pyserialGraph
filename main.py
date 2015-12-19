@@ -78,13 +78,11 @@ class ExampleApp(QtGui.QMainWindow, design.Ui_MainWindow):
 
     def displayValues(self):
         print("displaying!!!")
-        pass
-        #self.
-        # self.fieldDisplay.clear()
-        # for ID, value  in self.Values_To_Montior.iteritems():
-        #     formatted_string = str(ID) + " : " + str(value)
-        #     print("adding item " + formatted_string)
-        #     self.fieldDisplay.addItem(formatted_string)
+        self.fieldDisplay.clear()
+        for ID, value  in self.Values_To_Montior.iteritems():
+            formatted_string = str(ID) + " : " + str(value)
+            print("adding item " + formatted_string)
+            self.fieldDisplay.addItem(formatted_string)
 
 class getSerialMessages(QThread):    
     def __init__(self, ser, Values_To_Montior):
